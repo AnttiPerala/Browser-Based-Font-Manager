@@ -4,14 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browser Based Font Manager</title>
+
+    <style>
+    <% fonts.forEach((font, index) => { %>
+
+        
+            @font-face {
+                font-family: 'Font<%=index %>'; /* a unique font name for each font */
+                src: url('/fonts/<%= font %>') format('<%= font.endsWith('.ttf') ? "truetype" : font.endsWith('.otf') ? "opentype" : "woff" %>');          
+            }
+        
+
+  <%  }) %> 
+    </style>
+
 </head>
 <body>
 
     <h1>Font Manager</h1>
 
-    <p>
-        <%= fonts %>
-    </p>
+
+<% fonts.forEach((font, index) => { %>
+
+        <p style="font-family: 'Font<%=index %>';">Sample text using the font <%= font %></p>
+        
+
+  <%  }) %> 
+    
+   
     
 </body>
 </html>
