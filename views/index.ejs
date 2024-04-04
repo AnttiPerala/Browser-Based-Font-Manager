@@ -28,15 +28,28 @@
         <button type="submit">Change Directory</button>
     </form>
 
+    <input type="range" id="fontSizeSlider" min="7" max="70" value="16">
 
-<% fonts.forEach((font, index) => { %>
+    <div id="fonts">
 
-        <p style="font-family: 'Font<%=index %>';">Sample text using the font <%= font %></p>
-        
+        <% fonts.forEach((font, index) => { %>
 
-  <%  }) %> 
+                <p style="font-family: 'Font<%=index %>';">Sample text using the font <%= font %></p>
+                
+
+        <%  }) %> 
+
+    </div>
     
    
+  <script>
+    const slider = document.getElementById('fontSizeSlider');
+    const textToResize = document.getElementById('fonts');
+
+    slider.addEventListener('input', () => {
+        textToResize.style.fontSize = `${slider.value}px`;
+    })
+  </script>
     
 </body>
 </html>
