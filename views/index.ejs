@@ -11,7 +11,7 @@
         
             @font-face {
                 font-family: 'Font<%=index %>'; /* a unique font name for each font */
-                src: url('/fonts/<%= font %>') format('<%= font.endsWith('.ttf') ? "truetype" : font.endsWith('.otf') ? "opentype" : "woff" %>');          
+                src: url('/font/<%= font %>') format('<%= font.endsWith('.ttf') ? "truetype" : font.endsWith('.otf') ? "opentype" : "woff" %>');          
             }
         
 
@@ -22,6 +22,11 @@
 <body>
 
     <h1>Font Manager</h1>
+
+    <form action="/change-font-dir" method="post">
+        <input type="text" name="fontsDir" placeholder="Enter fonts directory path" value="/fonts" required>
+        <button type="submit">Change Directory</button>
+    </form>
 
 
 <% fonts.forEach((font, index) => { %>
