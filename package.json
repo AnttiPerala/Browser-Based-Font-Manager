@@ -1,0 +1,16 @@
+{
+  "name": "browser-based-font-manager",
+  "version": "1.0.0",
+  "description": "A simple offline font manager that runs on a browser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.19.2"
+  }
+}
