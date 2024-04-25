@@ -11,7 +11,7 @@
         
             @font-face {
                 font-family: 'Font<%=index %>'; /* a unique font name for each font */
-                src: url('/font/<%= font %>') format('<%= font.endsWith('.ttf') ? "truetype" : font.endsWith('.otf') ? "opentype" : "woff" %>');  /* set the font url from the fonts array and set the format to truetype, opentype or else to woff */ 
+                src: url('/font/<%= font.replace(/\\/g, '/') %>') format('<%= font.endsWith('.ttf') ? "truetype" : font.endsWith('.otf') ? "opentype" : "woff" %>');  /* set the font url from the fonts array and set the format to truetype, opentype or else to */ 
             }
         
 

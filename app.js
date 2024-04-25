@@ -15,22 +15,29 @@ app.set('views', path.join(__dirname, 'views')); //tells express to look in the 
 
 //define a default route for the index
 app.get('/', (req, res) => {
-    fs.readdir(fontsDir, (err, files) => {
-        if (err) {
-            console.error('Could not list the directory', err);
-            res.status(500).send('Server error while reading fonts directory');
-            return;
-        }
-
-        const fontFiles = files.filter(file => file.endsWith('.ttf') || file.endsWith('.otf') || file.endsWith('.woff') || file.endsWith('.woff2')); //filter the files array to only include the font files
+    const fontFiles = readFontsRecursively(fontsDir).map(file => path.relative(fontsDir, file)); //calls the readFontsRecursively function and passes in the fonts directory
 
         res.render('index', { //render the index page with the fonts directory and the font files
             fontsDir: fontsDir,
             fonts: fontFiles
         })
+    });
+
+
+//recursive search (means it can also look into subfolders to get fonts)
+function readFontsRecursively(dir, fileList = []){
+    const files = fs.readdirSync(dir);
+    files.forEach(file =>{
+        const filePath = path.join(dir, file);
+        if (fs.statSync(filePath).isDirectory()) {
+            readFontsRecursively(filePath, fileList);
+        } else if (filePath.endsWith('.ttf') || filePath.endsWith('.otf') || filePath.endsWith('.woff') || filePath.endsWith('.woff2')) {
+            fileList.push(filePath);
+        }
     })
 
-});
+    return fileList;
+}
 
 /* define a route to handle POST requests to /change-font-dir */
 
