@@ -43,6 +43,7 @@ app.get('/font/*', (req, res) => {
     const fullPath = path.join(fontsDir, fontPath);
     res.sendFile(fullPath, (err) => {
         if (err) {
+             
             if (!res.headersSent) { // Check if headers have not been sent yet
                 console.log(err);
                 res.status(404).send('Font not found');
