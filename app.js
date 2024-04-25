@@ -9,6 +9,8 @@ app.use(express.urlencoded({extended: true})); //tells express to parse incoming
 
 let fontsDir = path.join(__dirname, 'public/fonts'); //creates a path to the fonts directory
 
+console.log("fontsDir: ", fontsDir);
+
 //define a default route for the index
 app.get('/', (req, res) => {
     fs.readdir(fontsDir, (err, files) => {
@@ -20,7 +22,7 @@ app.get('/', (req, res) => {
 
         const fontFiles = files.filter(file => file.endsWith('.ttf') || file.endsWith('.otf') || file.endsWith('.woff') || file.endsWith('.woff2')); //filter the files array to only include the font files
 
-        res.render('index', {
+        res.render('index', { //render the index page with the fonts directory and the font files
             fontsDir: fontsDir,
             fonts: fontFiles
         })
@@ -31,7 +33,7 @@ app.get('/', (req, res) => {
 /* define a route to handle POST requests to /change-font-dir */
 
 app.post('/change-font-dir', (req, res) => {
-    const newDir = req.body.fontsDir; //get the new directory from the request body sent by the form in index.ejs
+    const newDir = req.body.changedFontsDir; //get the new directory from the request body sent by the form in index.ejs
     fontsDir = newDir; //set the fonts directory to the new directory
     res.redirect('/'); //redirect to the index page
 });
@@ -39,9 +41,9 @@ app.post('/change-font-dir', (req, res) => {
 /* server font files over HTTP(S) because FILE:/// protocol is not allowed */
 
 app.get('/font/*', (req, res) => {
-    const fontPath = decodeURIComponent(req.params[0]);
+    const fontPath = decodeURIComponent(req.params[0]); //get the font path from the request params
     const fullPath = path.join(fontsDir, fontPath);
-    res.sendFile(fullPath, (err) => {
+    res.sendFile(fullPath, (err) => { //send the font file at the specified path
         if (err) {
              
             if (!res.headersSent) { // Check if headers have not been sent yet
@@ -56,5 +58,5 @@ app.get('/font/*', (req, res) => {
 
 //start the server
 app.listen(port, ()=>{
-    console.log('Font Manager is now running and can be accessed throug any browser at http://localhost:' + port);
+    console.log('Font Manager is now running and can be accessed through any browser at http://localhost:' + port);
 })

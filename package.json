@@ -1,6 +1,21 @@
 {
   "name": "browser-based-font-manager",
   "version": "1.0.0",
+  "bin": "app.js",
+  "pkg": {
+    "targets": [
+      "node14-win-x64",
+      "node14-macos-x64",
+      "node14-linux-x64"
+    ],
+    "assets":[
+      "views/**/*", 
+      "public/**/*"
+    ], 
+    "scripts": [
+      "app/**/*.js"
+    ]
+  },
   "description": "A simple offline font manager that runs on a browser",
   "main": "index.js",
   "scripts": {
@@ -12,5 +27,8 @@
   "dependencies": {
     "ejs": "^3.1.9",
     "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
   }
 }
