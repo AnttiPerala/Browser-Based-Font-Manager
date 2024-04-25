@@ -6,6 +6,9 @@ const path = require('path'); //allows us to work with file paths across differe
 app.set('view engine', 'ejs'); //configures our express app to use EJS as its view engine. Express will then know to look for EJS files in our views directory.
 app.use(express.static('public')); //tells express to serve static files from the public directory
 app.use(express.urlencoded({extended: true})); //tells express to parse incoming requests with urlencoded payloads
+let fontCategories = {};
+
+
 
 let fontsDir = path.join(__dirname, 'public/fonts'); //creates a path to the fonts directory
 
@@ -17,9 +20,24 @@ app.set('views', path.join(__dirname, 'views')); //tells express to look in the 
 app.get('/', (req, res) => {
     const fontFiles = readFontsRecursively(fontsDir).map(file => path.relative(fontsDir, file)); //calls the readFontsRecursively function and passes in the fonts directory
 
+    let uniqueCategories = new Set(); //creates a new set to hold the unique categories. A set is a collection of unique values.
+
+    Object.values(fontCategories).forEach(categories => {
+        categories.forEach(category => {
+            uniqueCategories.add(category); //adds the category to the set
+        });
+    }) //loops through all the font categories
+
+    uniqueCategories = Array.from(uniqueCategories); //converts the set to an array
+
+    console.log("uniqueCategories: ", uniqueCategories);
+
         res.render('index', { //render the index page with the fonts directory and the font files
             fontsDir: fontsDir,
-            fonts: fontFiles
+            fonts: fontFiles,
+            categories: uniqueCategories,
+            fontCategories
+
         })
     });
 
@@ -46,6 +64,32 @@ app.post('/change-font-dir', (req, res) => {
     fontsDir = newDir; //set the fonts directory to the new directory
     res.redirect('/'); //redirect to the index page
 });
+
+//route for categorizing fonts
+app.post('/categorize-fonts', (req, res) => {
+    let selectedFonts = req.body.selectedFonts; //get the selected fonts from the request body sent by the form in index.ejs
+    const newCategory = req.body.categoryInput; //get the new category from the request body sent by the form in index.ejs
+
+    //ensure selectedFonts is always treated as an array
+    if (typeof selectedFonts ==='string'){
+        selectedFonts = [selectedFonts];
+    }
+
+    
+
+    selectedFonts.forEach(font => {
+        if (!fontCategories[font]){
+            fontCategories[font] = [newCategory];
+        } else if (!fontCategories[font].includes(newCategory)){
+            fontCategories[font].push(newCategory);
+        }
+    });
+
+    console.log("fontCategories: ", fontCategories);
+
+    res.redirect('/');
+
+})
 
 /* server font files over HTTP(S) because FILE:/// protocol is not allowed */
 

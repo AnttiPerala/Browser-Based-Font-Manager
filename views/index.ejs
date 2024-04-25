@@ -1,24 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browser Based Font Manager</title>
 
     <style>
-    <% fonts.forEach((font, index) => { %>
+        <% fonts.forEach((font, index)=> {
+                %> @font-face {
+                    font-family: 'Font<%=index %>';
+                    /* a unique font name for each font */
+                    src: url('/font/<%= font.replace(/\\/g, ' /') %>') format('<%= font.endsWith(' .ttf') ? "truetype" : font.endsWith(' .otf') ? "opentype" : "woff" %>');
+                    /* set the font url from the fonts array and set the format to truetype, opentype or else to */
+                }
 
-        
-            @font-face {
-                font-family: 'Font<%=index %>'; /* a unique font name for each font */
-                src: url('/font/<%= font.replace(/\\/g, '/') %>') format('<%= font.endsWith('.ttf') ? "truetype" : font.endsWith('.otf') ? "opentype" : "woff" %>');  /* set the font url from the fonts array and set the format to truetype, opentype or else to */ 
-            }
-        
+                <%
+            }) %>
+    </style>
 
-  <%  }) %> 
+    <style>
+        #categoryInput {
+            width: 40vw;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .fontWrap {
+            display: flex;
+            gap: 0.5rem;
+        }
     </style>
 
 </head>
+
 <body>
 
     <h1>Font Manager</h1>
@@ -28,28 +43,66 @@
         <button type="submit">Change Directory</button>
     </form>
 
+    <!-- Font categorization form -->
+    <form action="/categorize-fonts" method="post">
+        <input list="categories" name="categoryInput" id="categoryInput"
+            placeholder="Enter a new category name or select one from the list">
+        <button id="actionButton" type="submit">Assign to Category</button>
+        <input type="checkbox" name="filterByCategory" id="filterByCategory"> Filter by this category
+        <datalist id="categories">
+            <% categories.forEach(category => { %>)
+            <option value="<%= category %>"><%= category %></option>
+            <% }); %>
+        </datalist>
+
+        <div id="fonts">
+            <% fonts.forEach((font, index)=> { %>
+
+                <div class="fontWrap" data-categories="<%= fontCategories[font] ? fontCategories[font].join(' ') : '' %>">
+                    <input type="checkbox" class="selectFont" name="selectedFonts" value="<%= font %>">
+                    <p style="font-family: 'Font<%=index %>';">Sample text using the font <%= font %>
+                    </p>
+                </div>
+
+
+                <% }) %>
+        </div>
+
+    </form>
+
     <input type="range" id="fontSizeSlider" min="7" max="70" value="16">
 
-    <div id="fonts">
 
-        <% fonts.forEach((font, index) => { %>
+    <script>
 
-                <p style="font-family: 'Font<%=index %>';">Sample text using the font <%= font %></p>
-                
+       //filter with the checkbox
+       const filterByCategory = document.getElementById('filterByCategory');
+       const fontWraps = document.querySelectorAll('.fontWrap');
 
-        <%  }) %> 
+       filterByCategory.addEventListener('change', function() {
 
-    </div>
-    
-   
-  <script>
-    const slider = document.getElementById('fontSizeSlider');
-    const textToResize = document.getElementById('fonts');
+        let isFiltering = this.checked; // true or false
 
-    slider.addEventListener('input', () => {
-        textToResize.style.fontSize = `${slider.value}px`;
-    })
-  </script>
-    
+        fontWraps.forEach(fontWrap => {
+            if (isFiltering && !fontWrap.getAttribute('data-categories').split(' ').includes(categoryInput.value)) {
+                fontWrap.style.display = 'none';
+            } else {
+                fontWrap.style.display = '';
+
+            }
+        })
+
+
+       })
+
+        const slider = document.getElementById('fontSizeSlider');
+        const textToResize = document.getElementById('fonts');
+
+        slider.addEventListener('input', () => {
+            textToResize.style.fontSize = `${slider.value}px`;
+        })
+    </script>
+
 </body>
+
 </html>
