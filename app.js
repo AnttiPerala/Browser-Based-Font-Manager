@@ -11,6 +11,8 @@ let fontsDir = path.join(__dirname, 'public/fonts'); //creates a path to the fon
 
 console.log("fontsDir: ", fontsDir);
 
+app.set('views', path.join(__dirname, 'views')); //tells express to look in the views directory for views
+
 //define a default route for the index
 app.get('/', (req, res) => {
     fs.readdir(fontsDir, (err, files) => {
