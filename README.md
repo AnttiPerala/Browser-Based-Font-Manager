@@ -1,7 +1,8 @@
 # Browser-Based Font Manager
  A simple offline font manager that runs on a browser
 
-How to use:
+How to use:  
+
 Download the release .zip from the releases section.  
 
 Extract somewhere on your computer and run the .exe.  
