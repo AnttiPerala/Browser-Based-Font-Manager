@@ -1,5 +1,5 @@
 # Browser-Based Font Manager
- A simple offline font manager that runs on a browser. Works on Windows, Linux and Mac.
+ A simple offline font manager that runs on any browser. Works on Windows, Linux and Mac.
 
 ## How to use:  
 
