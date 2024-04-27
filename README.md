@@ -1,5 +1,5 @@
 # Browser-Based Font Manager
- A simple offline font manager that runs on any browser. Works on Windows, Linux and Mac.
+ A simple offline font manager that runs on any browser. Works on Windows, Linux and Mac. Allows you to pull all font files from a folder (including it's subfolders) and lists them using that same font. From there you can start categorizing your fonts in to useful categories and view fonts based on those categories.
 
 ## How to use:  
 
