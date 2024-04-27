@@ -8,9 +8,63 @@ app.use(express.static('public')); //tells express to serve static files from th
 app.use(express.urlencoded({extended: true})); //tells express to parse incoming requests with urlencoded payloads
 let fontCategories = {};
 
+// Check if the app is running in a development environment or as a packaged app
+const isPackaged = process.mainModule.filename.indexOf('app.asar') !== -1 || process.execPath.indexOf('node') === -1;
+
+// Set the path based on whether the app is packaged
+const basePath = isPackaged ? path.dirname(process.execPath) : path.join(__dirname);
+
+// Define the path for the settings file
+const configFilePath = path.join(basePath, 'settings.json');
+
+// Example configuration structure
+let appConfig = {
+    fontDirectory: '',
+    fontCategories: {}
+};
+
+//load settings from file
+
+function loadConfig() {
+    try {
+        console.log("Attempting to load configuration from:", configFilePath); // Log the path
+        if (fs.existsSync(configFilePath)) {
+            const data = fs.readFileSync(configFilePath, 'utf8');
+            Object.assign(appConfig, JSON.parse(data));
+            console.log("Loaded configuration:", appConfig); // Log the loaded configuration
+        } else {
+            console.log("Configuration file does not exist:", configFilePath); // Log if file doesn't exist
+        }
+    } catch (err) {
+        console.error('Failed to load configuration:', err);
+    }
+}
+
+//save configuration
+
+function saveConfig(data) {
+    try {
+        const jsonData = JSON.stringify(data, null, 4);
+        fs.writeFileSync(configFilePath, jsonData, 'utf8');
+        console.log('Configuration saved to', configFilePath);
+    } catch (err) {
+        console.error('Failed to save configuration:', err);
+    }
+}
 
 
-let fontsDir = path.join(__dirname, 'public/fonts'); //creates a path to the fonts directory
+// Load the configuration at the start of the application
+loadConfig();
+
+// Update fontsDir based on the loaded configuration
+if (appConfig.fontDirectory) {
+    fontsDir = appConfig.fontDirectory;
+    console.log("Updated fontsDir from configuration:", fontsDir);
+} else {
+    console.log("No fontDirectory found in configuration, using default:", fontsDir);
+}
+
+console.log("fontsDir: ", fontsDir);
 
 console.log("fontsDir: ", fontsDir);
 
@@ -22,7 +76,7 @@ app.get('/', (req, res) => {
 
     let uniqueCategories = new Set(); //creates a new set to hold the unique categories. A set is a collection of unique values.
 
-    Object.values(fontCategories).forEach(categories => {
+    Object.values(appConfig.fontCategories).forEach(categories => {
         categories.forEach(category => {
             uniqueCategories.add(category); //adds the category to the set
         });
@@ -36,7 +90,7 @@ app.get('/', (req, res) => {
             fontsDir: fontsDir,
             fonts: fontFiles,
             categories: uniqueCategories,
-            fontCategories
+            fontCategories: appConfig.fontCategories
 
         })
     });
@@ -62,34 +116,30 @@ function readFontsRecursively(dir, fileList = []){
 app.post('/change-font-dir', (req, res) => {
     const newDir = req.body.changedFontsDir; //get the new directory from the request body sent by the form in index.ejs
     fontsDir = newDir; //set the fonts directory to the new directory
+    appConfig.fontDirectory = newDir; // Update the font directory in the config
+    saveConfig(appConfig); // Pass the updated appConfig to save // Save the updated configuration
     res.redirect('/'); //redirect to the index page
 });
 
 //route for categorizing fonts
 app.post('/categorize-fonts', (req, res) => {
-    let selectedFonts = req.body.selectedFonts; //get the selected fonts from the request body sent by the form in index.ejs
-    const newCategory = req.body.categoryInput; //get the new category from the request body sent by the form in index.ejs
-
-    //ensure selectedFonts is always treated as an array
-    if (typeof selectedFonts ==='string'){
+    let selectedFonts = req.body.selectedFonts;
+    const newCategory = req.body.categoryInput;
+    if (typeof selectedFonts === 'string') {
         selectedFonts = [selectedFonts];
     }
 
-    
-
     selectedFonts.forEach(font => {
-        if (!fontCategories[font]){
-            fontCategories[font] = [newCategory];
-        } else if (!fontCategories[font].includes(newCategory)){
-            fontCategories[font].push(newCategory);
+        if (!appConfig.fontCategories[font]) {
+            appConfig.fontCategories[font] = [newCategory];
+        } else if (!appConfig.fontCategories[font].includes(newCategory)) {
+            appConfig.fontCategories[font].push(newCategory);
         }
     });
 
-    console.log("fontCategories: ", fontCategories);
-
+    saveConfig(appConfig); // Save the updated configuration
     res.redirect('/');
-
-})
+});
 
 /* server font files over HTTP(S) because FILE:/// protocol is not allowed */
 
