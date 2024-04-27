@@ -20,15 +20,88 @@
     </style>
 
     <style>
-        #categoryInput {
-            width: 40vw;
+        /* Css variable for main color */
+        :root {
+            --mainColor: #f09051f6;
+        }
+
+        #wrapper {
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+        }
+
+        #fonts{
+            background-color: rgb(231, 228, 228);
+            border-radius: 0.5rem;
+            padding: 1rem;
             margin-top: 1rem;
-            margin-bottom: 1rem;
+        }
+
+        #categoryInput,
+        #changedFontsDir {
+            width: 40vw;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        #fontSizeSlider {
+            width: 90vw;
+        }
+
+        label {
+            display: inline-block;
+            margin-top: 1rem;
         }
 
         .fontWrap {
             display: flex;
             gap: 0.5rem;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        #mainTitle{
+            /* background-color: white; */
+            display: inline-block;
+            padding: 1rem;
+            margin: 2rem 0;
+        }
+
+        button {
+            background-color: var(--mainColor);
+            padding: 0.5rem;
+            border: none;
+            color: white;
+            text-align: center;
+            font-size: 16px;
+            margin: 4px 2px;
+            opacity: 0.6;
+            transition: 0.3s;
+            display: inline-block;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 0.3rem;
+        }
+
+        button:hover {
+            opacity: 1
+        }
+
+        .mainColor {
+            color: var(--mainColor);
+        }
+
+
+        .thin {
+            font-family: "Roboto-thin";
+        }
+
+        @font-face {
+            font-family: "Roboto-thin";
+            src: url("/fonts/Roboto-Thin.ttf");
         }
     </style>
 
@@ -36,72 +109,90 @@
 
 <body>
 
-    <h1>Font Manager</h1>
+    <div id="wrapper">
 
-    <form action="/change-font-dir" method="post">
-        <input type="text" name="changedFontsDir" placeholder="Enter fonts directory path" value="/fonts" required>
-        <button type="submit">Change Directory</button>
-    </form>
-
-    <!-- Font categorization form -->
-    <form action="/categorize-fonts" method="post">
-        <input list="categories" name="categoryInput" id="categoryInput"
-            placeholder="Enter a new category name or select one from the list">
-        <button id="actionButton" type="submit">Assign to Category</button>
-        <input type="checkbox" name="filterByCategory" id="filterByCategory"> Filter by this category
-        <datalist id="categories">
-            <% categories.forEach(category => { %>)
-            <option value="<%= category %>"><%= category %></option>
-            <% }); %>
-        </datalist>
-
-        <div id="fonts">
-            <% fonts.forEach((font, index)=> { %>
-
-                <div class="fontWrap" data-categories="<%= fontCategories[font] ? fontCategories[font].join(' ') : '' %>">
-                    <input type="checkbox" class="selectFont" name="selectedFonts" value="<%= font %>">
-                    <p style="font-family: 'Font<%=index %>';">Sample text using the font <%= font %>
-                    </p>
-                </div>
+        <h1 id="mainTitle"><span class="thin">FONT</span> <span class="mainColor">MANAGER</span></h1>
 
 
-                <% }) %>
-        </div>
+        <form action="/change-font-dir" method="post">
+            <label for="changedFontsDir">Change fonts directory:</label>
+            <br>
+            <input type="text" name="changedFontsDir" id="changedFontsDir" value="<%= fontsDir %>"
+                placeholder="Enter font directory path">
+            <button type="submit">Change Directory</button>
+        </form>
 
-    </form>
+        <!-- Font categorization form -->
+        <form action="/categorize-fonts" method="post">
+            <label for="categoryInput">Categorize selected fonts:</label>
+            <br>
+            <input list="categories" name="categoryInput" id="categoryInput"
+                placeholder="Enter a new category name or select one from the list">
+            <button id="actionButton" type="submit">Assign to Category</button>
+            <input type="checkbox" name="filterByCategory" id="filterByCategory"> Filter by this category
+            <datalist id="categories">
+                <% categories.forEach(category=> { %>)
+                    <option value="<%= category %>">
+                        <%= category %>
+                    </option>
+                    <% }); %>
+            </datalist>
 
-    <input type="range" id="fontSizeSlider" min="7" max="70" value="16">
+            <br>
+
+            <label for="fontSizeSlider">Change font size:</label>
+            <br>
+            <input type="range" id="fontSizeSlider" min="7" max="70" value="16">
+
+            <div id="fonts">
+                <% fonts.forEach((font, index)=> { %>
+
+                    <div class="fontWrap"
+                        data-categories="<%= fontCategories[font] ? fontCategories[font].join(' ') : '' %>">
+                        <input type="checkbox" class="selectFont" name="selectedFonts" value="<%= font %>">
+                        <p style="font-family: 'Font<%=index %>';" contenteditable="true">Sample text using the font <%= font %>
+                        </p>
+                    </div>
 
 
-    <script>
+                    <% }) %>
+            </div>
 
-       //filter with the checkbox
-       const filterByCategory = document.getElementById('filterByCategory');
-       const fontWraps = document.querySelectorAll('.fontWrap');
-
-       filterByCategory.addEventListener('change', function() {
-
-        let isFiltering = this.checked; // true or false
-
-        fontWraps.forEach(fontWrap => {
-            if (isFiltering && !fontWrap.getAttribute('data-categories').split(' ').includes(categoryInput.value)) {
-                fontWrap.style.display = 'none';
-            } else {
-                fontWrap.style.display = '';
-
-            }
-        })
+        </form>
 
 
-       })
 
-        const slider = document.getElementById('fontSizeSlider');
-        const textToResize = document.getElementById('fonts');
+        <script>
 
-        slider.addEventListener('input', () => {
-            textToResize.style.fontSize = `${slider.value}px`;
-        })
-    </script>
+            //filter with the checkbox
+            const filterByCategory = document.getElementById('filterByCategory');
+            const fontWraps = document.querySelectorAll('.fontWrap');
+
+            filterByCategory.addEventListener('change', function () {
+
+                let isFiltering = this.checked; // true or false
+
+                fontWraps.forEach(fontWrap => {
+                    if (isFiltering && !fontWrap.getAttribute('data-categories').split(' ').includes(categoryInput.value)) {
+                        fontWrap.style.display = 'none';
+                    } else {
+                        fontWrap.style.display = '';
+
+                    }
+                })
+
+
+            })
+
+            const slider = document.getElementById('fontSizeSlider');
+            const textToResize = document.getElementById('fonts');
+
+            slider.addEventListener('input', () => {
+                textToResize.style.fontSize = `${slider.value}px`;
+            })
+        </script>
+
+    </div> <!-- end wrapper -->
 
 </body>
 

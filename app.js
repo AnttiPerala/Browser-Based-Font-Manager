@@ -14,6 +14,9 @@ const isPackaged = process.mainModule.filename.indexOf('app.asar') !== -1 || pro
 // Set the path based on whether the app is packaged
 const basePath = isPackaged ? path.dirname(process.execPath) : path.join(__dirname);
 
+// Default fonts directory
+const defaultFontsDir = path.join(__dirname, 'public/fonts');
+
 // Define the path for the settings file
 const configFilePath = path.join(basePath, 'settings.json');
 
@@ -57,11 +60,12 @@ function saveConfig(data) {
 loadConfig();
 
 // Update fontsDir based on the loaded configuration
-if (appConfig.fontDirectory) {
+if (appConfig.fontDirectory && fs.existsSync(appConfig.fontDirectory)) {
     fontsDir = appConfig.fontDirectory;
-    console.log("Updated fontsDir from configuration:", fontsDir);
+    console.log("Using configured fontsDir:", fontsDir);
 } else {
-    console.log("No fontDirectory found in configuration, using default:", fontsDir);
+    fontsDir = defaultFontsDir;
+    console.log("Configured fontsDir not found, using default:", fontsDir);
 }
 
 console.log("fontsDir: ", fontsDir);
@@ -114,12 +118,18 @@ function readFontsRecursively(dir, fileList = []){
 /* define a route to handle POST requests to /change-font-dir */
 
 app.post('/change-font-dir', (req, res) => {
-    const newDir = req.body.changedFontsDir; //get the new directory from the request body sent by the form in index.ejs
-    fontsDir = newDir; //set the fonts directory to the new directory
-    appConfig.fontDirectory = newDir; // Update the font directory in the config
-    saveConfig(appConfig); // Pass the updated appConfig to save // Save the updated configuration
-    res.redirect('/'); //redirect to the index page
+    const newDir = req.body.changedFontsDir; // Get the new directory from the request body
+    if (fs.existsSync(newDir)) {
+        fontsDir = newDir; // Set the fonts directory to the new directory
+        appConfig.fontDirectory = newDir; // Update the font directory in the config
+        console.log("Changed fontsDir to:", fontsDir);
+    } else {
+        console.log("Provided fontsDir does not exist, retaining old:", fontsDir);
+    }
+    saveConfig(appConfig); // Save the updated configuration
+    res.redirect('/'); // Redirect to the index page
 });
+
 
 //route for categorizing fonts
 app.post('/categorize-fonts', (req, res) => {
