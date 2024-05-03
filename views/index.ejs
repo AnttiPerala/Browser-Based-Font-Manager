@@ -176,6 +176,22 @@
             const fontWraps = document.querySelectorAll('.fontWrap');
             const slider = document.getElementById('fontSizeSlider');
 
+             // Add the synchronization script
+             document.addEventListener('DOMContentLoaded', function() {
+    const editableTexts = document.querySelectorAll('.fontWrap p[contenteditable="true"]');  // Ensure targeting is correct
+
+    editableTexts.forEach(element => {
+        element.addEventListener('input', function(event) {
+            const newText = event.target.textContent;  // Use 'textContent' for better compatibility
+            editableTexts.forEach(otherElement => {
+                if (otherElement !== event.target) {
+                    otherElement.textContent = newText;  // Ensure consistent text update
+                }
+            });
+        });
+    });
+});
+
 
 filterByCategory.addEventListener('change', function() {
     let isFiltering = this.checked; // true or false
