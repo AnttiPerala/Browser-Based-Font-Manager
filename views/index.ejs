@@ -30,7 +30,7 @@
             border-radius: 0.5rem;
         }
 
-        #fonts{
+        #fonts {
             background-color: rgb(231, 228, 228);
             border-radius: 0.5rem;
             padding: 1rem;
@@ -58,12 +58,17 @@
             gap: 0.5rem;
         }
 
+        .fontWrap {
+    will-change: font-size;  /* Optimizes for changes in font-size */
+}
+
+
         h1 {
             font-size: 4rem;
             font-family: Arial, Helvetica, sans-serif;
         }
 
-        #mainTitle{
+        #mainTitle {
             /* background-color: white; */
             display: inline-block;
             padding: 1rem;
@@ -150,7 +155,8 @@
                     <div class="fontWrap"
                         data-categories="<%= fontCategories[font] ? fontCategories[font].join(' ') : '' %>">
                         <input type="checkbox" class="selectFont" name="selectedFonts" value="<%= font %>">
-                        <p style="font-family: 'Font<%=index %>';" contenteditable="true">Sample text using the font <%= font %>
+                        <p style="font-family: 'Font<%=index %>';" contenteditable="true">Sample text using the font <%=
+                                font %>
                         </p>
                     </div>
 
@@ -167,29 +173,53 @@
             //filter with the checkbox
             const filterByCategory = document.getElementById('filterByCategory');
             const fontWraps = document.querySelectorAll('.fontWrap');
-
-            filterByCategory.addEventListener('change', function () {
-
-                let isFiltering = this.checked; // true or false
-
-                fontWraps.forEach(fontWrap => {
-                    if (isFiltering && !fontWrap.getAttribute('data-categories').split(' ').includes(categoryInput.value)) {
-                        fontWrap.style.display = 'none';
-                    } else {
-                        fontWrap.style.display = '';
-
-                    }
-                })
-
-
-            })
-
             const slider = document.getElementById('fontSizeSlider');
-            const textToResize = document.getElementById('fonts');
 
-            slider.addEventListener('input', () => {
-                textToResize.style.fontSize = `${slider.value}px`;
-            })
+
+filterByCategory.addEventListener('change', function() {
+    let isFiltering = this.checked; // true or false
+    fontWraps.forEach(fontWrap => {
+        if (isFiltering && !fontWrap.getAttribute('data-categories').split(' ').includes(categoryInput.value)) {
+            fontWrap.style.display = 'none';
+        } else {
+            fontWrap.style.display = '';
+        }
+    });
+});
+
+
+function updateFontSizeForVisible(fonts, size) {
+        // Update only the first 15 fonts based on their appearance in the DOM
+        fonts.slice(0, 15).forEach(font => {
+            font.style.fontSize = `${size}px`;
+        });
+    }
+
+    function updateAllFonts(size) {
+        // Update all fonts
+        fontWraps.forEach(font => {
+            font.style.fontSize = `${size}px`;
+        });
+    }
+
+    let rafId;
+
+slider.addEventListener('input', () => {
+    const newSize = slider.value;
+    if (rafId) {
+        cancelAnimationFrame(rafId);  // Cancel any pending updates to avoid stacking calls
+    }
+    rafId = requestAnimationFrame(() => {
+        updateFontSizeForVisible(Array.from(fontWraps), newSize);
+    });
+});
+
+slider.addEventListener('change', () => {
+    cancelAnimationFrame(rafId);  // Ensure no frame is pending before applying final updates
+    const newSize = slider.value;
+    updateAllFonts(newSize);
+});
+
         </script>
 
     </div> <!-- end wrapper -->
