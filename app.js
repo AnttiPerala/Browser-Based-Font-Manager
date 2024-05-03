@@ -94,8 +94,8 @@ app.get('/', (req, res) => {
             fontsDir: fontsDir,
             fonts: fontFiles,
             categories: uniqueCategories,
-            fontCategories: appConfig.fontCategories
-
+            fontCategories: appConfig.fontCategories,
+            path: path // Pass the 'path' module here
         })
     });
 

@@ -149,20 +149,16 @@
             <br>
             <input type="range" id="fontSizeSlider" min="7" max="70" value="16">
 
-            <div id="fonts">
-                <% fonts.forEach((font, index)=> { %>
-
-                    <div class="fontWrap"
-                        data-categories="<%= fontCategories[font] ? fontCategories[font].join(' ') : '' %>">
-                        <input type="checkbox" class="selectFont" name="selectedFonts" value="<%= font %>">
-                        <p style="font-family: 'Font<%=index %>';" contenteditable="true">Sample text using the font <%=
-                                font %>
-                        </p>
-                    </div>
-
-
-                    <% }) %>
-            </div>
+            <% fonts.forEach((font, index)=> { %>
+                <div class="fontWrap"
+                    data-categories="<%= fontCategories[font] ? fontCategories[font].join(' ') : '' %>"
+                    title="<%= path.join(fontsDir, font) %>"> <!-- Concatenate fontsDir with font -->
+                    <input type="checkbox" class="selectFont" name="selectedFonts" value="<%= font %>">
+                    <p style="font-family: 'Font<%=index %>';" contenteditable="true">Sample text using the font <%= font %></p>
+                </div>
+            <% }) %>
+            
+            
 
         </form>
 
