@@ -151,6 +151,7 @@
 
             <button id="openFontsDirBtn" type="button">Open Fonts Directory</button>
 
+            <button id="scrollToBottomBtn" type="button">Scroll to Bottom</button>
 
 
             <% fonts.forEach((font, index)=> { %>
@@ -237,6 +238,38 @@ document.getElementById('openFontsDirBtn').addEventListener('click', function() 
         });
 });
 
+let scrollInterval; // Declare outside to access in different functions
+
+function stopScrolling(event) {
+    if (!event || event.target !== document.getElementById('scrollToBottomBtn')) {
+        clearInterval(scrollInterval);
+        window.removeEventListener('keydown', stopScrolling);
+        window.removeEventListener('click', stopScrolling);
+    }
+}
+
+document.getElementById('scrollToBottomBtn').addEventListener('click', function(event) {
+    if (!scrollInterval) {
+        let intervalMs = 10;  // Time in milliseconds between each scroll increment
+        let stepSize = 1;    // Pixels to scroll each interval
+
+        // Initiate the first scroll immediately on click for responsiveness
+        window.scrollBy(0, stepSize);
+
+        // Set the scroll interval for subsequent scrolls
+        scrollInterval = setInterval(function() {
+            if (window.scrollY + window.innerHeight >= document.body.scrollHeight) {
+                stopScrolling();
+            } else {
+                window.scrollBy(0, stepSize);
+            }
+        }, intervalMs);
+
+        // Add listeners to stop scrolling on key press or mouse click
+        window.addEventListener('keydown', stopScrolling);
+        window.addEventListener('click', stopScrolling);
+    }
+});
 
         </script>
 
