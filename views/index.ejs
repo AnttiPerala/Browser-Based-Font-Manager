@@ -189,7 +189,27 @@
                 }
             });
         });
-    });
+    }); // end of editableTexts forEach
+
+    //open the fonts directory
+    document.getElementById('openFontsDirBtn').addEventListener('click', function() {
+    // Send a request to the server to open the fonts directory
+    fetch('/open-fonts-dir')
+        .then(response => {
+            if (response.ok) {
+                console.log('Fonts directory opened successfully');
+                // You can add additional handling here if needed
+            } else {
+                console.error('Failed to open fonts directory:', response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Error opening fonts directory:', error);
+        });
+});
+
+
+
 });
 
 
@@ -238,21 +258,7 @@ slider.addEventListener('change', () => {
 });
 
 
-document.getElementById('openFontsDirBtn').addEventListener('click', function() {
-    // Send a request to the server to open the fonts directory
-    fetch('/open-fonts-dir')
-        .then(response => {
-            if (response.ok) {
-                console.log('Fonts directory opened successfully');
-                // You can add additional handling here if needed
-            } else {
-                console.error('Failed to open fonts directory:', response.statusText);
-            }
-        })
-        .catch(error => {
-            console.error('Error opening fonts directory:', error);
-        });
-});
+
 
 let scrollInterval; // Declare outside to access in different functions
 

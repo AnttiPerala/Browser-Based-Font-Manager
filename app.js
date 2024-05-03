@@ -2,12 +2,14 @@ const express = require('express'); //express is a web application framework for
 const app = express(); //this creates an instance of an express application, which can then be used to set up the server and configure its behavior
 const port = 3000; //will be used to specify which port the express app should listen to for incoming connections
 const fs = require('fs'); //allows us to work with the file system on our device, for example for reading and writing files
-const opn = require('opn');//allows us to open folders
 const path = require('path'); //allows us to work with file paths across different operating systems in a consistent and easy manner
+const openPath = require('./openPath'); // Import the openPath function for opening folders
+const { exec } = require('child_process'); //for automatically opning in browser on launch
 app.set('view engine', 'ejs'); //configures our express app to use EJS as its view engine. Express will then know to look for EJS files in our views directory.
 app.use(express.static('public')); //tells express to serve static files from the public directory
 app.use(express.urlencoded({extended: true})); //tells express to parse incoming requests with urlencoded payloads
 let fontCategories = {};
+
 
 // Check if the app is running in a development environment or as a packaged app
 const isPackaged = process.mainModule.filename.indexOf('app.asar') !== -1 || process.execPath.indexOf('node') === -1;
@@ -177,21 +179,37 @@ app.get('/font/*', (req, res) => {
 });
 
 app.get('/open-fonts-dir', (req, res) => {
-    // Open the fontsDir when this route is accessed
-    console.log("fontsDir: ", fontsDir);
-    opn(fontsDir + '').then(() => {
-        console.log('Opened fonts directory');
-        // Here, you might want to render a different template or send a response back to the client indicating that the fonts directory has been opened.
-        res.send('Opened fonts directory');
-    }).catch(err => {
-        console.error('Error opening fonts directory:', err);
+    try {
+        openPath(fontsDir);
+        res.send('Opened fonts directory successfully.');
+    } catch (error) {
+        console.error('Error opening fonts directory:', error);
         res.status(500).send('Failed to open fonts directory');
-    });
+    }
 });
 
+//open on launch
 
+function openBrowser(url) {
+    switch (process.platform) {
+        case "win32":
+            exec(`start ${url}`);
+            break;
+        case "darwin":
+            exec(`open ${url}`);
+            break;
+        case "linux":
+            exec(`xdg-open ${url}`);
+            break;
+        default:
+            console.log('Platform not supported for automatic browser launch.');
+            break;
+    }
+}
 
 //start the server
 app.listen(port, ()=>{
     console.log('Font Manager is now running and can be accessed through any browser at http://localhost:' + port);
+    openBrowser(`http://localhost:${port}`);
+
 })
