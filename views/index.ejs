@@ -149,6 +149,10 @@
             <br>
             <input type="range" id="fontSizeSlider" min="7" max="70" value="16">
 
+            <button id="openFontsDirBtn" type="button">Open Fonts Directory</button>
+
+
+
             <% fonts.forEach((font, index)=> { %>
                 <div class="fontWrap"
                     data-categories="<%= fontCategories[font] ? fontCategories[font].join(' ') : '' %>"
@@ -215,6 +219,24 @@ slider.addEventListener('change', () => {
     const newSize = slider.value;
     updateAllFonts(newSize);
 });
+
+
+document.getElementById('openFontsDirBtn').addEventListener('click', function() {
+    // Send a request to the server to open the fonts directory
+    fetch('/open-fonts-dir')
+        .then(response => {
+            if (response.ok) {
+                console.log('Fonts directory opened successfully');
+                // You can add additional handling here if needed
+            } else {
+                console.error('Failed to open fonts directory:', response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Error opening fonts directory:', error);
+        });
+});
+
 
         </script>
 

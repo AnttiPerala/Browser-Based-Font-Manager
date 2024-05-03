@@ -8,10 +8,10 @@
       "node14-macos-x64",
       "node14-linux-x64"
     ],
-    "assets":[
-      "views/**/*", 
+    "assets": [
+      "views/**/*",
       "public/**/*"
-    ], 
+    ],
     "scripts": [
       "app/**/*.js"
     ]
@@ -26,7 +26,8 @@
   "license": "ISC",
   "dependencies": {
     "ejs": "^3.1.9",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "opn": "^6.0.0"
   },
   "devDependencies": {
     "pkg": "^5.8.1"

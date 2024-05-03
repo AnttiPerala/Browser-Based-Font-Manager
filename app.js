@@ -2,6 +2,7 @@ const express = require('express'); //express is a web application framework for
 const app = express(); //this creates an instance of an express application, which can then be used to set up the server and configure its behavior
 const port = 3000; //will be used to specify which port the express app should listen to for incoming connections
 const fs = require('fs'); //allows us to work with the file system on our device, for example for reading and writing files
+const opn = require('opn');//allows us to open folders
 const path = require('path'); //allows us to work with file paths across different operating systems in a consistent and easy manner
 app.set('view engine', 'ejs'); //configures our express app to use EJS as its view engine. Express will then know to look for EJS files in our views directory.
 app.use(express.static('public')); //tells express to serve static files from the public directory
@@ -35,6 +36,11 @@ function loadConfig() {
             const data = fs.readFileSync(configFilePath, 'utf8');
             Object.assign(appConfig, JSON.parse(data));
             console.log("Loaded configuration:", appConfig); // Log the loaded configuration
+            
+            // Ensure fontCategories is initialized as an empty object
+            appConfig.fontCategories = appConfig.fontCategories || {};
+
+            console.log("Loaded font categories:", appConfig.fontCategories); // Log the loaded font categories
         } else {
             console.log("Configuration file does not exist:", configFilePath); // Log if file doesn't exist
         }
@@ -42,6 +48,7 @@ function loadConfig() {
         console.error('Failed to load configuration:', err);
     }
 }
+
 
 //save configuration
 
@@ -168,6 +175,21 @@ app.get('/font/*', (req, res) => {
         }
     });
 });
+
+app.get('/open-fonts-dir', (req, res) => {
+    // Open the fontsDir when this route is accessed
+    console.log("fontsDir: ", fontsDir);
+    opn(fontsDir + '').then(() => {
+        console.log('Opened fonts directory');
+        // Here, you might want to render a different template or send a response back to the client indicating that the fonts directory has been opened.
+        res.send('Opened fonts directory');
+    }).catch(err => {
+        console.error('Error opening fonts directory:', err);
+        res.status(500).send('Failed to open fonts directory');
+    });
+});
+
+
 
 //start the server
 app.listen(port, ()=>{
