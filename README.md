@@ -12,7 +12,7 @@ Download the release .zip for windows from the releases section.
 
 Extract somewhere on your computer and run the .exe.  
 
-Go to your browser at http://localhost:3000/ to access the user interface  
+The UI should open in your browser automatically.  
 
 Store your fonts-folder in the font-directory input. Your fonts will be now loaded and displayed on the page.  
 
@@ -28,7 +28,7 @@ Extract somewhere on your computer and right-click on the file, choose propertie
 
 Open the terminal in that folder and launch the program by typing ./browser-based-font-manager-linux
 
-Go to your browser at http://localhost:3000/ to access the user interface  
+The UI should open in your browser automatically.  
 
 Store your fonts-folder in the font-directory input. Your fonts will be now loaded and displayed on the page.  
 
@@ -46,7 +46,7 @@ Type chmod +x browser-based-font-manager-macos
 
 Launch the program by typing ./browser-based-font-manager-macos
 
-Go to your browser at http://localhost:3000/ to access the user interface  
+The UI should open in your browser automatically.  
 
 Store your fonts-folder in the font-directory input. Your fonts will be now loaded and displayed on the page.  
 
