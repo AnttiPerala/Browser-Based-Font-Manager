@@ -11,7 +11,8 @@
             "thin"
         ],
         "ALL windows fonts\\ACaslonPro-Bold.otf": [
-            "test"
+            "test",
+            "serif"
         ]
     }
 }

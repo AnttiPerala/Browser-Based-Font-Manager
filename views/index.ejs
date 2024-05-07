@@ -108,6 +108,45 @@
             font-family: "Roboto-thin";
             src: url("/fonts/Roboto-Thin.ttf");
         }
+
+        .custom-dropdown {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: none;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 40vw; /* Adjust width as necessary */
+    z-index: 1000; /* High z-index to ensure it appears on top */
+}
+
+
+.dropdown-item {
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+.loading-indicator {
+    display: none; /* Hidden by default */
+    position: fixed; /* Or 'absolute' if inside a positioned parent */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px 20px;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: white;
+    z-index: 1050; /* Ensure it's above most content */
+    border-radius: 5px;
+    text-align: center;
+}
+
+
+
     </style>
 
 </head>
@@ -117,6 +156,11 @@
     <div id="wrapper">
 
         <h1 id="mainTitle"><span class="thin">FONT</span> <span class="mainColor">MANAGER</span></h1>
+
+        <div id="loadingIndicator" class="loading-indicator">
+            Loading...
+        </div>
+        
 
 
         <form action="/change-font-dir" method="post">
@@ -131,19 +175,17 @@
         <form action="/categorize-fonts" method="post">
             <label for="categoryInput">Categorize selected fonts:</label>
             <br>
-            <input list="categories" name="categoryInput" id="categoryInput"
-                placeholder="Enter a new category name or select one from the list">
+            <input name="categoryInput" id="categoryInput" placeholder="Enter a new category name or select one from the list">
+            <div id="categoriesDropdown" class="custom-dropdown">
+                <% categories.forEach(category => { %>
+                    <div onclick="selectCategory('<%= category %>')" class="dropdown-item"><%= category %></div>
+                <% }); %>
+            </div>
             <button id="actionButton" type="submit">Assign to Category</button>
+            
             <button type="button" onclick="handleRemoveFromCategory()">Remove from Category</button> 
             <input type="checkbox" name="filterByCategory" id="filterByCategory"> Filter by this category
-            <datalist id="categories">
-                <% categories.forEach(category=> { %>)
-                    <option value="<%= category %>">
-                        <%= category %>
-                    </option>
-                    <% }); %>
-            </datalist>
-
+ 
             <br>
 
             <label for="fontSizeSlider">Change font size:</label>
@@ -255,6 +297,23 @@ function handleRemoveFromCategory() {
 }
 
 
+document.getElementById('categoryInput').addEventListener('focus', function() {
+    document.getElementById('categoriesDropdown').style.display = 'block';
+});
+
+document.getElementById('categoryInput').addEventListener('blur', function() {
+    setTimeout(() => { // timeout to allow click event to fire on dropdown items
+        document.getElementById('categoriesDropdown').style.display = 'none';
+    }, 200);
+});
+
+function selectCategory(category) {
+    document.getElementById('categoryInput').value = category;
+    document.getElementById('categoriesDropdown').style.display = 'none';
+}
+
+
+
 
 function updateFontSizeForVisible(fonts, size) {
         // Update only the first 15 fonts based on their appearance in the DOM
@@ -300,6 +359,8 @@ function stopScrolling(event) {
         window.removeEventListener('click', stopScrolling);
     }
 }
+
+
 
 document.getElementById('scrollToBottomBtn').addEventListener('click', function(event) {
     if (!scrollInterval) {
