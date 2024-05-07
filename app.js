@@ -188,6 +188,38 @@ app.get('/open-fonts-dir', (req, res) => {
     }
 });
 
+//handle removal from category:
+// Route to handle removing a category from selected fonts
+app.post('/remove-from-category', (req, res) => {
+    console.log('Request Body:', req.body); // Debug to see the received request body
+    const selectedFonts = Array.isArray(req.body.selectedFonts) ? req.body.selectedFonts : [req.body.selectedFonts];
+    const categoryToRemove = req.body.categoryToRemove;
+
+    console.log("Selected Fonts: ", selectedFonts);
+    console.log("Category to Remove: ", categoryToRemove);
+
+    selectedFonts.forEach(font => {
+        console.log("Processing Font: ", font);
+        if (appConfig.fontCategories[font]) {
+            const index = appConfig.fontCategories[font].indexOf(categoryToRemove);
+            if (index > -1) {
+                appConfig.fontCategories[font].splice(index, 1); // Remove the category from the font
+                if (appConfig.fontCategories[font].length === 0) {
+                    delete appConfig.fontCategories[font];
+                }
+            } else {
+                console.log("Category not found in font:", font);
+            }
+        } else {
+            console.log("Font not found in categories:", font);
+        }
+    });
+
+    saveConfig(appConfig);
+    res.send('Categories updated successfully.');
+});
+
+
 //open on launch
 
 function openBrowser(url) {

@@ -134,6 +134,7 @@
             <input list="categories" name="categoryInput" id="categoryInput"
                 placeholder="Enter a new category name or select one from the list">
             <button id="actionButton" type="submit">Assign to Category</button>
+            <button type="button" onclick="handleRemoveFromCategory()">Remove from Category</button> 
             <input type="checkbox" name="filterByCategory" id="filterByCategory"> Filter by this category
             <datalist id="categories">
                 <% categories.forEach(category=> { %>)
@@ -223,6 +224,36 @@ filterByCategory.addEventListener('change', function() {
         }
     });
 });
+
+//remove from category
+function handleRemoveFromCategory() {
+    // Prevent any default form submission
+    event.preventDefault();
+
+    // Prepare URL-encoded data
+    const formData = new URLSearchParams();
+    document.querySelectorAll('.selectFont:checked').forEach(checkbox => {
+        formData.append('selectedFonts', checkbox.value);
+    });
+    const categoryInput = document.getElementById('categoryInput').value;
+    formData.append('categoryToRemove', categoryInput);
+
+    // Use Fetch API to send the data as URL-encoded
+    fetch('/remove-from-category', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log('Server Response:', data);  // Log server response
+        window.location.reload();  // Optionally reload the page to reflect changes
+    })
+    .catch(error => console.error('Error:', error));
+}
+
 
 
 function updateFontSizeForVisible(fonts, size) {
