@@ -133,16 +133,36 @@
 
 .loading-indicator {
     display: none; /* Hidden by default */
-    position: fixed; /* Or 'absolute' if inside a positioned parent */
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1050; /* High z-index to ensure it's above most content */
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    margin: 0 auto;
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #9b5dff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 10px 20px;
-    background-color: rgba(0, 0, 0, 0.75);
-    color: white;
-    z-index: 1050; /* Ensure it's above most content */
-    border-radius: 5px;
-    text-align: center;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 
@@ -158,7 +178,10 @@
         <h1 id="mainTitle"><span class="thin">FONT</span> <span class="mainColor">MANAGER</span></h1>
 
         <div id="loadingIndicator" class="loading-indicator">
-            Loading...
+            <div class="spinner">
+            </div>
+
+            
         </div>
         
 
@@ -214,6 +237,9 @@
 
         <script>
 
+            // Show the loading indicator as soon as the script runs, assuming fonts are being loaded
+showLoadingIndicator();
+
             //filter with the checkbox
             const filterByCategory = document.getElementById('filterByCategory');
             const fontWraps = document.querySelectorAll('.fontWrap');
@@ -257,15 +283,23 @@
 
 
 filterByCategory.addEventListener('change', function() {
-    let isFiltering = this.checked; // true or false
-    fontWraps.forEach(fontWrap => {
-        if (isFiltering && !fontWrap.getAttribute('data-categories').split(' ').includes(categoryInput.value)) {
-            fontWrap.style.display = 'none';
-        } else {
-            fontWrap.style.display = '';
-        }
-    });
+    showLoadingIndicator(); // Show loading indicator immediately
+
+    // Delay the execution of the filter operation to allow the UI to update
+    setTimeout(() => {
+        let isFiltering = this.checked;
+        fontWraps.forEach(fontWrap => {
+            if (isFiltering && !fontWrap.getAttribute('data-categories').split(' ').includes(categoryInput.value)) {
+                fontWrap.style.display = 'none';
+            } else {
+                fontWrap.style.display = '';
+            }
+        });
+        hideLoadingIndicator(); // Hide loading indicator after processing is done
+    }, 0); // Timeout set to 0 to defer execution to the next event loop cycle
 });
+
+
 
 //remove from category
 function handleRemoveFromCategory() {
@@ -360,6 +394,18 @@ function stopScrolling(event) {
     }
 }
 
+function showLoadingIndicator() {
+    console.log('show loading indicator');
+    document.getElementById('loadingIndicator').style.display = 'block';
+}
+
+function hideLoadingIndicator() {
+    setTimeout(() => {
+        document.getElementById('loadingIndicator').style.display = 'none';
+    }, 300); // Minimal delay to avoid flickering for very fast operations
+}
+
+
 
 
 document.getElementById('scrollToBottomBtn').addEventListener('click', function(event) {
@@ -384,6 +430,14 @@ document.getElementById('scrollToBottomBtn').addEventListener('click', function(
         window.addEventListener('click', stopScrolling);
     }
 });
+
+document.fonts.ready.then(function () {
+    // Hide the loading indicator after all fonts are loaded
+    hideLoadingIndicator();
+});
+
+
+
 
         </script>
 

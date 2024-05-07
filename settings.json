@@ -12,7 +12,8 @@
         ],
         "ALL windows fonts\\ACaslonPro-Bold.otf": [
             "test",
-            "serif"
+            "serif",
+            "bold"
         ]
     }
 }
